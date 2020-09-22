@@ -175,11 +175,14 @@ do_borg_ssh_con() {
    else
       msg='This step will create a ssh key for the local root user with no passphrase (if one does not already exist), '\
 'and attempt to copy '"${borg_user}'s"' public ssh key to authorized_keys file of '"$borg_user@$borg_host"'. '\
-'This will allow the local root to make unattended backups to '"$borg_user@$borg_host.\n\n\n"\
-'Specify an optional comment for the keypair:'
-      inputBox "$borg_title" "${msg}"
-      [ $? = 0 ] || return 1
-      key_comment=$REPLY
+'This will allow the local root to make unattended backups to '"$borg_user@$borg_host.\n\n\n"
+      booleanBox "$borg_title" "${msg}"
+      if [ $? -eq 0 ]; then
+         msg="${msg}Specify an optional comment for the keypair:"
+         inputBox "$borg_title" "${msg}"
+         [ $? = 0 ] || return 1
+         key_comment=$REPLY
+      fi
    fi
    if [ $? -eq 0 ]; then
       echo "Creating local rsa keypair for user..."
