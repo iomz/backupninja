@@ -3,7 +3,7 @@
 
 set -e
 
-getsection databases
+setsection databases
 getconf db_includes
 getconf db_excludes phpmyadmin information_schema mysql
 
