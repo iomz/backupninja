@@ -44,13 +44,24 @@ else
     echo "ERROR: couldn't establish a connection to the mysql server for the user 'root'."
 fi
 
-## do the backup
+# base of the command string
+exec="mariabackup --backup --user=root --target-dir=${directory}"
+
+# check if db_includes is set and add it to the command string if so
+if [ ! -z "$db_includes" ]; then
+   exec="${exec} --databases-include=${db_includes}"
+fi
+
+# check if db_excludes is set and add it to the command string if so
+if [ ! -z "$db_excludes" ]; then
+   exec="${exec} --databases-exclude=${db_excludes}"
+fi
+
+# do the backup
 echo "Starting full backup of databases to ${directory}"
-mariabackup --backup \
-	--target-dir=$directory \
-	--user=root \
-	--databases="${db_includes}" \
-	--databases-exclude="${db_excludes}"
+
+# run the in previous conditional checks built command string
+$($exec)
 
 if [ $? -ne 0 ]; then
 	exit_code=$?
