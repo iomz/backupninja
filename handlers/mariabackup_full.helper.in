@@ -84,7 +84,7 @@ do_mariabackup_finish() {
 ### backupninja Mariabackup config file ###
 [databases]
 db_includes = $mariabackup_databases_includes
-db_exclude = $mariabackup_databases_excludes
+db_excludes = $mariabackup_databases_excludes
 
 [storage]
 directory = $mariabackup_directory
