@@ -5,7 +5,7 @@ set -e
 
 setsection databases
 getconf db_includes
-getconf db_excludes phpmyadmin information_schema mysql
+getconf db_excludes
 
 setsection storage
 getconf directory
@@ -49,8 +49,8 @@ echo "Starting full backup of databases to ${directory}"
 mariabackup --backup \
 	--target-dir=$directory \
 	--user=root \
-	--databases=$db_includes \
-	--databases-excludes=$db_excludes
+	--databases="${db_includes}" \
+	--databases-excludes="${db_excludes}"
 
 if [ $? -ne 0 ]; then
 	exit_code=$?

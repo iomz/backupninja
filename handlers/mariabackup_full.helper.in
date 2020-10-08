@@ -83,8 +83,8 @@ do_mariabackup_finish() {
 	cat >$next_filename <<EOF
 ### backupninja Mariabackup config file ###
 [databases]
-db_includes = $mariabackup_databases_includes
-db_excludes = $mariabackup_databases_excludes
+db_includes = "${mariabackup_databases_includes}"
+db_excludes = "${mariabackup_databases_excludes}"
 
 [storage]
 directory = $mariabackup_directory
@@ -126,6 +126,6 @@ mariabackupfull_wizard() {
 
 	_databases_done=
 	_storage_done=
-
+	db_excludes="information_scheme performance_scheme phpmyadmin mysql"
 	mariabackup_main_menu
 }
