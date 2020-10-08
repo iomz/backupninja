@@ -126,6 +126,7 @@ mariabackupfull_wizard() {
 
 	_databases_done=
 	_storage_done=
-	db_excludes="information_scheme performance_scheme phpmyadmin mysql"
+	mariabackup_databases_includes=
+	mariabackup_databases_excludes="information_scheme performance_scheme phpmyadmin mysql"
 	mariabackup_main_menu
 }
