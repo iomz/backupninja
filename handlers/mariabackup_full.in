@@ -50,7 +50,7 @@ mariabackup --backup \
 	--target-dir=$directory \
 	--user=root \
 	--databases="${db_includes}" \
-	--databases-excludes="${db_excludes}"
+	--databases-exclude="${db_excludes}"
 
 if [ $? -ne 0 ]; then
 	exit_code=$?
