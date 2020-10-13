@@ -25,7 +25,7 @@ rm -rf ${directory}/*
 
 # test if mariabackup is installed
 echo "checking installation of mariabackup..."
-which mariabackup 1>/dev/null
+mariabackup_binary=$(which mariabackup)
 if [ $? -ne 0 ]; then
     echo "ERROR: Couldn't find a installation of mariabackup. Verify mariabackup is installed..."
 fi
@@ -45,11 +45,11 @@ else
 fi
 
 # base of the command string
-exec="mariabackup --backup --user=root --target-dir=${directory}"
+exec="${mariabackup_binary} --backup --user=root --target-dir=${directory}"
 
 # check if db_includes is set and add it to the command string if so
 if [ ! -z "$db_includes" ]; then
-   exec="${exec} --databases-include=${db_includes}"
+   exec="${exec} --databases=${db_includes}"
 fi
 
 # check if db_excludes is set and add it to the command string if so
@@ -61,7 +61,7 @@ fi
 echo "Starting full backup of databases to ${directory}"
 
 # run the in previous conditional checks built command string
-$($exec)
+eval $exec
 
 if [ $? -ne 0 ]; then
 	exit_code=$?

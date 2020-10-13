@@ -43,7 +43,11 @@ do_mariabackup_databases_includes() {
 		[ $? -eq 0 ] || return 1
 		mariabackup_databases_includes=""
 		for i in $REPLY; do
-			[ -n "$i" ] && mariabackup_databases_includes="$mariabackup_databases_includes $i"
+			if [ -z "$mariabackup_databases_includes" ]; then
+			   mariabackup_databases_includes="$i"
+			else
+			   mariabackup_databases_includes="$mariabackup_databases_includes $i"
+			fi
 		done
 	done
 }
@@ -65,7 +69,11 @@ do_mariabackup_databases_excludes() {
 		[ $? -eq 0 ] || return 1
 		mariabackup_databases_excludes=""
 		for i in $REPLY; do
-			[ -n "$i" ] && mariabackup_databases_excludes="$mariabackup_databases_excludes $i"
+			if [ -z "$mariabackup_databases_excludes" ]; then
+			   mariabackup_databases_excludes="$i"
+			else
+			   mariabackup_databases_excludes="$mariabackup_databases_excludes $i"
+			fi
 		done
 	done
 }
