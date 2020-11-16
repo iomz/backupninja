@@ -266,7 +266,7 @@ do_borg_ssh_con() {
          # use sftp with -b - to get the cmd's to execute on the remote machine via stdin
          sftp -b - -o "ControlPath=${SHARED_CONN}" "ignored" <<-EOF || return 1
             -get .ssh/authorized_keys $KEYS_TEMPFILE
-            EOF
+EOF
          # add a newline or create file if it's missing
          [ -z "$(tail -1c $KEYS_TEMPFILE 2>/dev/null)" ] || echo >> $KEYS_TEMPFILE
          # append the keys being piped in here
@@ -276,7 +276,7 @@ do_borg_ssh_con() {
             chmod 700 .ssh
             put $KEYS_TEMPFILE .ssh/authorized_keys
             chmod 600 .ssh/authorized_keys
-            EOF
+EOF
       fi
    fi
 
