@@ -15,67 +15,28 @@ HELPERS="$HELPERS mariabackupfull:full_db_backups"
 # - encryption
 # - compression with stream over stdout
 
-do_mariabackup_databases() {
-	do_mariabackup_databases_includes
-	[ $? -eq 0 ] || return 1
-
-	do_mariabackup_databases_excludes
-	[ $? -eq 0 ] || return 1
-
-	_databases_done="(DONE)"
-	setDefault storage
-}
-
 do_mariabackup_databases_includes() {
 	# choose which databases to backup
 	REPLY=
 	while [ -z "$REPLY" ]; do
-		formBegin "${mariabackup_title}: choose databases to backup"
-			formItem "database:"
-			formItem "database:"
-			formItem "database:"
-			formItem "database:"
-			formItem "database:"
-			formItem "database:"
-			formItem "database:"
-			formItem "database:"
-		formDisplay
-		[ $? -eq 0 ] || return 1
-		mariabackup_databases_includes=""
-		for i in $REPLY; do
-			if [ -z "$mariabackup_databases_includes" ]; then
-			   mariabackup_databases_includes="$i"
-			else
-			   mariabackup_databases_includes="$mariabackup_databases_includes $i"
-			fi
-		done
+		inputBox "$mariabackup_title" "Choose which databases to include from the backup:"
+		[ $? -eq 0 ] || return
+		mariabackup_databases_includes=$REPLY
 	done
+  _db_includes_done="(DONE)"
+	setDefault storage
 }
 
 do_mariabackup_databases_excludes() {
 	# choose which databases to exclude from the backup
 	REPLY=
 	while [ -z "$REPLY"  ]; do
-		formBegin "${mariabackup_title}: choose databases to exclude from the backup"
-			formItem "database:"
-			formItem "database:"
-			formItem "database:"
-			formItem "database:"
-			formItem "database:"
-			formItem "database:"
-			formItem "database:"
-			formItem "database:"
-		formDisplay
+		inputBox "$mariabackup_title" "Choose which databases to exclude from the backup:"
 		[ $? -eq 0 ] || return 1
-		mariabackup_databases_excludes=""
-		for i in $REPLY; do
-			if [ -z "$mariabackup_databases_excludes" ]; then
-			   mariabackup_databases_excludes="$i"
-			else
-			   mariabackup_databases_excludes="$mariabackup_databases_excludes $i"
-			fi
-		done
+		mariabackup_databases_excludes=$REPLY
 	done
+	setDefault storage
+	_db_excludes_done="(DONE)"
 }
 
 do_mariabackup_storage() {
@@ -103,21 +64,40 @@ EOF
 
 mariabackup_main_menu() {
 	while true; do
+
+		menuDbIncludes="choose which databases to include"
+		menuDbExcludes="choose which databases to include"
 		menuStorageDir="backup storage directory $_storage_done"
-		menuDatabases="choose which databases to include & exclude $_databases_done"
 
 		menuBox "$mariabackup_title" "choose a step:" \
-			databases "$menuDatabases" \
+			db_includes "$menuDbIncludes" \
+			db_excludes "$menuDbExcludes" \
 			storage "$menuStorageDir" \
 			finish "Finish up and create Config"
 
 		[ $? = 0 ] || return
 		result="$REPLY"
 		case "$result" in
-		"databases") do_mariabackup_databases ;;
+
+		"db_includes")
+		 if [ -z "$_db_excludes_done" ]; then
+		    do_mariabackup_databases_includes
+		 else
+		   msgBox "$mariabackup_title" "You can either create includes OR excludes"
+		 fi
+		 ;;
+
+    "db_excludes")
+		 if [ -z "$_db_includes_done" ]; then
+		    do_mariabackup_databases_excludes
+		 else
+		   msgBox "$mariabackup_title" "You can either create includes OR excludes"
+		 fi
+		 ;;
+
 		"storage") do_mariabackup_storage ;;
 		"finish")
-			if [[ "$_databases_done$_storage_done" != "(DONE)(DONE)" ]]; then
+			if [[ "$_storage_done" != "(DONE)" ]]; then
 				msgBox "$mariabackup_title" "You cannot create the configuration file until mandatory steps are completed."
 			else
 				do_mariabackup_finish
@@ -132,9 +112,8 @@ mariabackupfull_wizard() {
 
 	mariabackup_title="mariabackup action wizard"
 
-	_databases_done=
 	_storage_done=
 	mariabackup_databases_includes=
-	mariabackup_databases_excludes="information_scheme performance_scheme phpmyadmin mysql"
+	mariabackup_databases_excludes=
 	mariabackup_main_menu
 }
