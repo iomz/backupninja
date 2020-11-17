@@ -33,7 +33,7 @@ fi
 # check if mysqld is alive
 mysqladmin ping 1>/dev/null
 if [ $? -ne 0 ]; then
-	echo "ERROR: mysqld seems to be dead..."
+   echo "ERROR: mysqld seems to be dead..."
 fi
 
 # test the connection to the server
@@ -64,6 +64,6 @@ echo "Starting full backup of databases to ${directory}"
 eval $exec
 
 if [ $? -ne 0 ]; then
-	exit_code=$?
-	echo "FAILURE: something went wrong... exiting with ${exit_code}"
+   exit_code=$?
+   echo "FAILURE: something went wrong... exiting with ${exit_code}"
 fi
