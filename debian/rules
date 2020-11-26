@@ -1,22 +1,32 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
+SYSTEMD_DIR := $(shell pkg-config systemd --variable=systemdsystemunitdir)
+
 PACKAGE = backupninja
 TMP = $(CURDIR)/debian/$(PACKAGE)
 
 %:
 	dh $@
 
+override_dh_clean:
+	dh_auto_clean
+	rm -f debian/backupninja.service
+	rm -f debian/backupninja.timer
+
 override_dh_auto_configure:
 	dh_auto_configure -- \
 	   --libdir=\$${prefix}/lib \
-	   --libexecdir=\$${prefix}/lib
+	   --libexecdir=\$${prefix}/lib \
+	   --with-systemdsystemunitdir=$(SYSTEMD_DIR)
 
 override_dh_auto_install:
 	dh_auto_install
 	chmod a-x $(TMP)/usr/lib/backupninja/parseini
 	chmod a-x $(TMP)/usr/lib/backupninja/vserver
 	rm $(TMP)/usr/share/backupninja/example.*
+	cp systemd/backupninja.service debian
+	cp systemd/backupninja.timer debian
 
 override_dh_compress:
 	dh_compress -Xexample
@@ -27,4 +37,3 @@ override_dh_fixperms:
 
 override_dh_installchangelogs:
 	dh_installchangelogs ChangeLog
-

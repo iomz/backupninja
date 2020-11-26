@@ -6,7 +6,8 @@ Uploaders: Micah Anderson <micah@riseup.net>,
  intrigeri <intrigeri@debian.org>,
  Jerome Charaoui <jerome@riseup.net>
 Build-Depends:
- debhelper (>= 10)
+ debhelper (>= 10),
+ pkg-config
 Build-Conflicts: autoconf2.13
 Standards-Version: 4.1.4
 Homepage: https://0xacab.org/riseuplabs/backupninja
