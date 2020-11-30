@@ -28,10 +28,17 @@ getconf init yes
 getconf include
 getconf exclude
 getconf create_options
-getconf prune yes
-getconf keep 30d
-getconf prune_options
 getconf cache_directory
+
+setsection prune
+getconf prune
+getconf keep_hourly
+# daily is still named keep for backwards compatibility
+getconf keep
+getconf keep_weekly
+getconf keep_monthly
+getconf keep_yearly
+getconf prune_options
 
 setsection dest
 getconf user
@@ -163,9 +170,24 @@ fi
 
 # borg prune
 if [ "$prune" == "yes" ]; then
-   if [ ! "$keep" == "0" ]; then
-      prune_options="${prune_options} --keep-within=${keep}"
+
+   # add the different pruning configurations to the cmd string if set
+   if [ ! -z "$keep_hourly" ]; then
+       prune_options="${prune_options} --keep-hourly=$keep_hourly"
    fi
+   if [ ! -z "$keep" ]; then
+       prune_options="${prune_options} --keep-daily=$keep"
+   fi
+   if [ ! -z "$keep_weekly" ]; then
+       prune_options="${prune_options} --keep-weekly=$keep_weekly"
+   fi
+   if [ ! -z "$keep_monthly" ]; then
+       prune_options="${prune_options} --keep-monthly=$keep_monthly"
+   fi
+   if [ ! -z "$keep_yearly" ]; then
+       prune_options="${prune_options} --keep-yearly=$keep_yearly"
+   fi
+
    prunestr="borg prune $prune_options $execstr_repository"
    debug "$prunestr"
    if [ $test = 0 ]; then

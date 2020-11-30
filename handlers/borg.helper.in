@@ -272,13 +272,21 @@ do_borg_prune() {
       declare -a tmp_array
       set -o noglob
       REPLY=
-      formBegin "$borg_title - keep all backups made within this number of days"
-         formItem "keep" "$borg_keep"
+      formBegin "$borg_title - what backups to keep:"
+         formItem "hourly" "$borg_keep_hourly"
+         # for backwards compatibility daily is still named borg_keep
+         formItem "daily" "$borg_keep"
+         formItem "weekly" "$borg_keep_weekly"
+         formItem "monthly" "$borg_keep_monthly"
+         formItem "yearly" "$borg_keep_yearly"
          formDisplay
-
       [ $? = 0 ] || return
       tmp_array=($REPLY)
-      borg_keep=${tmp_array[0]}
+      borg_keep_hourly=${tmp_array[0]}
+      borg_keep=${tmp_array[1]}
+      borg_keep_weekly=${tmp_array[2]}
+      borg_keep_monthly=${tmp_array[3]}
+      borg_keep_yearly=${tmp_array[4]}
 
       set +o noglob
    fi
@@ -312,8 +320,13 @@ EOF
    cat >> $next_filename <<EOF
 
 ## for more info see : borg prune -h
+[prune]
 prune = $borg_prune
-keep = "${borg_keep}d"
+keep_hourly = $borg_keep_hourly
+keep = $borg_keep
+keep_weekly = $borg_keep_weekly
+keep_monthly = $borg_keep_monthly
+keep_yearly = $borg_keep_yearly
 
 [dest]
 directory = $borg_directory
@@ -381,7 +394,14 @@ borg_wizard() {
    borg_compression=lz4
    borg_encryption=none
    borg_passphrase=
+
+   # pruning
+   borg_keep_hourly=
+   # for backwards compatibility daily is still named keep
    borg_keep=30
+   borg_keep_weekly=
+   borg_keep_monthly=
+   borg_keep_yearly=
 
    # Global variables whose '*' shall not be expanded
    set -o noglob
