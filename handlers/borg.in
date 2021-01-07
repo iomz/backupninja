@@ -175,7 +175,8 @@ debug "$nice $execstr"
 
 if [ $test = 0 ]; then
    output=`$nice su -c "$execstr" 2>&1`
-   if [ $? = 0 ]; then
+   ret=$?
+   if [ $ret = 0 ]; then
       debug $output
       info "Successfully finished backing up source."
    elif [ $ret = 1 ]; then
