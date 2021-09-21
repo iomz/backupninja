@@ -209,11 +209,6 @@ else
    fi
 fi
 
-### Cleanup options
-if ! version_ge "$duplicity_version" '0.6.20'; then
-   execstr_options="${execstr_options} --extra-clean"
-fi
-
 ### Temporary directory
 if [ -n "$tmpdir" ]; then
    if [ ! -d "$tmpdir" ]; then
