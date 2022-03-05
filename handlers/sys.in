@@ -600,6 +600,9 @@ if [ "$luksheaders" == "yes" ]; then
          label=${dev#/dev/}
          label=${label//\//-}
          outputfile=${luksheadersfile//__star__/$label}
+         if [ -f "${outputfile}" ]; then
+           rm "${outputfile}"
+         fi
          debug "$CRYPTSETUP will try to backup the LUKS header for device $dev"
          debug "$CRYPTSETUP luksHeaderBackup \"${dev}\" --header-backup-file \"${outputfile}\""
          output=`$CRYPTSETUP luksHeaderBackup "${dev}" --header-backup-file "${outputfile}" 2>&1`
